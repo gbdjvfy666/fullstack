@@ -1,6 +1,12 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
+mongoose
+  .connect('mongodb+srv://nostresko:ScNDGwK8HYKGV3Nj@cluster0myself.gqp5l.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0myself')
+  .then(() => console.log('DB OK'))
+  .catch((err) => console.log('DB errror', err));
+ 
 const app = express();
 
 app.use(express.json());
