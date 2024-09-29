@@ -2,7 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { registerValidation, loginValidation } from './validations.js';
 import checkAuth from './utils/checkAuth.js';
-import * as UserController from "../controllers/UserController.js";
+import * as UserController from './controllers/UserController.js';  // Исправлен путь к UserController
+import * as PostController from './controllers/PostController.js';  // Привел к единому стилю
 
 
 const URL = 'mongodb+srv://lepeha:Pass123@cluster0myself.ij4cz.mongodb.net/';
@@ -15,18 +16,28 @@ mongoose
 const app = express();
 
 app.use(express.json()); // чтобы express распознавал JSON
+
 // Логин пользователя
-app.post('/auth/login', loginValidation, UserController.login)
-// Маршрут регистрации или логина
-app.post('/auth/register', registerValidation, UserController.regiter)
+app.post('/auth/login', loginValidation, UserController.login);
+
+// Регистрация пользователя
+app.post('/auth/register', registerValidation, UserController.register);  // Исправлено имя функции
+
 // Получение данных о пользователе
-app.get('/auth/me', UserController.getme)
+app.get('/auth/me', checkAuth, UserController.getme);
+
+// Создание статьи
+app.post('/posts', PostController.create);
+
+// app.get('/posts', PostController.getAll);
+// app.get('/posts/:id', PostController.getOne);
+// app.delete('/posts', PostController.remove);
+// app.patch('/posts', PostController.update);
 
 // Запуск сервера
 app.listen(4444, (err) => {
   if (err) {
     return console.log(err);
   }
-
   console.log('Server OK');
 });

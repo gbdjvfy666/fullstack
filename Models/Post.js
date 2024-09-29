@@ -8,7 +8,6 @@ const PostSchema = new mongoose.Schema({
   text: {
     type: String,
     required: true,
-    unique: true,
   },
   tags: {
     type: Array,
@@ -21,10 +20,11 @@ const PostSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+    required: true,
   },
-  ImageUrl: String,
-},  {
-  timestamps: true,
+  imageUrl: String, // Приведено к стандарту camelCase
+}, {
+  timestamps: true, // Автоматически добавляет поля createdAt и updatedAt
 });
 
-export default mongoose.model('User', PostSchema);
+export default mongoose.model('Post', PostSchema);
