@@ -1,5 +1,5 @@
 // созданеие удаление статей 
-import PostModel from "../Models/Post";
+import PostModel from "../Models/Post.js";
 
 
 export const create = async (req, res) => {
@@ -14,7 +14,7 @@ export const create = async (req, res) => {
 
     const post = await doc.save();
 
-    res.json(post)
+    res.json(post);
   } catch(err) {
     console.log(err);
     res.status(500).json({

@@ -1,6 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { registerValidation, loginValidation } from './validations.js';
+import { registerValidation, loginValidation, postCreateValidayion } from './validations.js';
 import checkAuth from './utils/checkAuth.js';
 import * as UserController from './controllers/UserController.js';  // Исправлен путь к UserController
 import * as PostController from './controllers/PostController.js';  // Привел к единому стилю
@@ -27,7 +27,7 @@ app.post('/auth/register', registerValidation, UserController.register);  // И�
 app.get('/auth/me', checkAuth, UserController.getme);
 
 // Создание статьи
-app.post('/posts', PostController.create);
+app.post('/posts', postCreateValidayion, PostController.create);
 
 // app.get('/posts', PostController.getAll);
 // app.get('/posts/:id', PostController.getOne);
