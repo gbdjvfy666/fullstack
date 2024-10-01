@@ -23,13 +23,13 @@ app.post('/auth/login', loginValidation, UserController.login);
 // Регистрация пользователя
 app.post('/auth/register', registerValidation, UserController.register);  // Исправлено имя функции
 
-
 app.get('/auth/me', checkAuth, UserController.getme); // Получение данных о пользователе
+
 app.post('/posts', checkAuth, postCreateValidayion, PostController.create); // Создание статьи
 app.get('/posts', PostController.getAll); // получение всех статей
 app.get('/posts/:id', PostController.getOne); // для получения оной статьи
-// app.delete('/posts', PostController.remove);
-// app.patch('/posts', PostController.update);
+app.delete('/posts/:id', checkAuth, PostController.remove);
+app.patch('/posts/:id', PostController.update);
 
 // Запуск сервера
 app.listen(4444, (err) => {
