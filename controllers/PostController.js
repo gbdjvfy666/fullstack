@@ -2,6 +2,21 @@
 import Post from "../Models/Post.js";
 import PostModel from "../Models/Post.js";
 
+export const getLastTags = async (req, res) => {
+  try {
+    const posts = await PostModel.find().limit(5).exec;
+
+    const tags = posts.map(obj => obj.tags).flat().slice(0, 5);
+
+    res.json(posts);
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({
+      message: 'Не удалось получить статьи '
+    });
+  }
+};
+
 export const getAll = async (req, res) => {
   try {
     const posts = await PostModel.find().populate({ path: "user", select: ["name", "avatar"] });

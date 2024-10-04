@@ -1,10 +1,12 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import multer from 'multer';
+import cors from 'cors'
+
 import { registerValidation, loginValidation, postCreateValidation } from './validations.js';
 import { UserController, PostController } from './controllers/index.js'
 import checkAuth from './utils/checkAuth.js';
 
-import multer from 'multer';
 import handleValidationErrors from './utils/handleValidationErrors.js';
 
 const URL = 'mongodb+srv://lepeha:Pass123@cluster0myself.ij4cz.mongodb.net/';
@@ -29,7 +31,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use(express.json()); // чтобы express распознавал JSON
-app.use('/uploads', express.static('uploads'))
+app.use('/uploads', express.static('uploads'));
+app.use(cors());
+
 app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login);// Логин пользователя
 app.post('/auth/register',registerValidation, handleValidationErrors, UserController.register); // Регистрация пользователя
 app.get('/auth/me', checkAuth, UserController.getme); // Получение данных о пользователе
@@ -42,6 +46,7 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
 app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create); // Создание статьи
 
 app.get('/posts', PostController.getAll); // Получение всех статей
+app.get('/posts/tags', PostController.getLastTags);
 
 app.get('/posts/:id', PostController.getOne); // Получение одной статьи
 
