@@ -1,38 +1,51 @@
-// созданеие удаление статей 
-import Post from "../Models/Post.js";
+import mongoose from "mongoose";
 import PostModel from "../Models/Post.js";
 
+// Получение последних тегов
 export const getLastTags = async (req, res) => {
   try {
-    const posts = await PostModel.find().limit(5).exec;
+    const posts = await PostModel.find().limit(5).exec();
 
-    const tags = posts.map(obj => obj.tags).flat().slice(0, 5);
+    if (!Array.isArray(posts)) {
+      return res.status(500).json({ message: "Ошибка при получении статей." });
+    }
 
-    res.json(posts);
-  } catch(err) {
+    const tags = posts.map((post) => post.tags).flat().slice(0, 5);
+
+    res.json(tags);
+  } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось получить статьи '
+      message: 'Не удалось получить теги',
+      error: err.message, // Дополнительная информация об ошибке
     });
   }
 };
 
+// Получение всех статей
 export const getAll = async (req, res) => {
   try {
     const posts = await PostModel.find().populate({ path: "user", select: ["name", "avatar"] });
 
     res.json(posts);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось получить статьи '
+      message: 'Не удалось получить статьи',
+      error: err.message, // Дополнительная информация об ошибке
     });
   }
 };
 
+// Получение статьи по ID
 export const getOne = async (req, res) => {
   try {
     const postId = req.params.id;
+
+    // Проверка корректности ObjectId
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: 'Некорректный ID статьи' });
+    }
 
     const post = await PostModel.findOneAndUpdate(
       { _id: postId },
@@ -51,13 +64,20 @@ export const getOne = async (req, res) => {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось получить статью',
+      error: err.message, // Дополнительная информация об ошибке
     });
   }
 };
 
+// Удаление статьи по ID
 export const remove = async (req, res) => {
   try {
     const postId = req.params.id;
+
+    // Проверка корректности ObjectId
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: 'Некорректный ID статьи' });
+    }
 
     const doc = await PostModel.findOneAndDelete({ _id: postId });
 
@@ -74,10 +94,12 @@ export const remove = async (req, res) => {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось удалить статью',
+      error: err.message, // Дополнительная информация об ошибке
     });
   }
 };
 
+// Создание новой статьи
 export const create = async (req, res) => {
   try {
     const doc = new PostModel({
@@ -91,42 +113,49 @@ export const create = async (req, res) => {
     const post = await doc.save();
 
     res.json(post);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).json({
-      messsage: 'Не удалось создать статью'
+      message: 'Не удалось создать статью',
+      error: err.message, // Дополнительная информация об ошибке
     });
   }
 };
 
+// Обновление статьи по ID
 export const update = async (req, res) => {
   try {
     const postId = req.params.id;
 
-    const updatedPost = await PostModel.updateOne(
+    // Проверка корректности ObjectId
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: 'Некорректный ID статьи' });
+    }
+
+    const updatedPost = await PostModel.findOneAndUpdate(
       { _id: postId },
       {
         title: req.body.title,
         text: req.body.text,
         imageUrl: req.body.imageUrl,
-        user: req.userId, // Исправлено здесь
+        user: req.userId,
         tags: req.body.tags,
-      }
+      },
+      { new: true } // Возвращает обновленный документ
     );
 
-    if (updatedPost.modifiedCount === 0) {
+    if (!updatedPost) {
       return res.status(404).json({
         message: 'Статья не найдена или не обновлена',
       });
     }
 
-    res.json({
-      success: true,
-    });
+    res.json(updatedPost); // Возвращаем обновленный документ
   } catch (err) {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось обновить статью',
+      error: err.message, // Дополнительная информация об ошибке
     });
   }
 };

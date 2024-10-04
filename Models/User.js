@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
+// Схема пользователя
 const UserSchema = new mongoose.Schema({
-  fullName: {
+  fullname: {
     type: String,
     required: true, 
   },
@@ -9,18 +10,16 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
+    unique: true, // Email должен быть уникальным
   },
   
   passwordHash: {
     type: String,
-    require: true,
+    required: true, // Исправлено на 'required'
   },
-  
-  avatarUrl: String,
-},  {
-  
-  timestamps: true,
+},  
+{
+  timestamps: true, // Автоматическое добавление полей createdAt и updatedAt
 });
 
 export default mongoose.model('User', UserSchema);
