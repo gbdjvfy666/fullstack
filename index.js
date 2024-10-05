@@ -4,7 +4,7 @@ import multer from 'multer';
 import cors from 'cors';
 
 import { registerValidation, loginValidation, postCreateValidation } from './validations.js';
-import { UserController, PostController } from './controllers/index.js';
+import { UserController, PostController } from './controllers/index.js'; // Импортируем контроллеры
 import checkAuth from './utils/checkAuth.js';
 import handleValidationErrors from './utils/handleValidationErrors.js';
 
@@ -51,7 +51,7 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
 app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create); // Создание статьи
 app.get('/posts', PostController.getAll); // Получение всех статей
 app.get('/posts/tags', PostController.getLastTags); // Получение тегов последних статей
-app.get('/tags', PostController.getLastTags); // Получение всех тегов
+app.get('/tags', PostController.getAllTags); // Новый маршрут для получения всех тегов
 app.get('/posts/:id', PostController.getOne); // Получение статьи по ID
 app.delete('/posts/:id', checkAuth, PostController.remove); // Удаление статьи по ID
 app.patch('/posts/:id', postCreateValidation, checkAuth, handleValidationErrors, PostController.update); // Обновление статьи по ID

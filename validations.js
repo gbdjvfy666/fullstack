@@ -1,13 +1,13 @@
 import { body } from "express-validator";
 
 export const loginValidation = [
-  body('email').isEmail(),
-  body('password').isLength({ min: 4}),
+  body('email', 'Неверный формат почты').isEmail(),
+  body('password', 'Пароль должен быть минимум 4 символа').isLength({ min: 4}),
 ];
 
 export const registerValidation = [
   body('email', 'Неверный формат почты').isEmail(),
-  body('password', 'нужен пароль сложнее').isLength({ min: 4}),
+  body('password', 'нужен пароль сложнее').isLength({ min: 4 }),
   body('fullname', 'укажите имя').isLength({ min: 2}),
   body('avatarUrl', 'неверная ссылка на аватарку').optional().isURL(),
 
