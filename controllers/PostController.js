@@ -62,6 +62,7 @@ export const getAll = async (req, res) => {
 export const getOne = async (req, res) => {
   try {
     const postId = req.params.id;
+    console.log(postId)
 
     const post = await PostModel.findByIdAndUpdate(
       postId,
