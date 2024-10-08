@@ -65,22 +65,32 @@ export const getOne = async (req, res) => {
     console.log(postId)
 
     const post = await PostModel.findByIdAndUpdate(
-      postId,
+      {_id: postId},
       { $inc: { viewsCount: 1 } },
-      { returnDocument: 'after' }
-    );
+      { returnDocument: 'after' },
 
-    if (!post) {
-      return res.status(404).json({
-        message: 'Статья не найдена',
-      });
-    }
-
-    res.json(post);
+      (err, doc) => {
+        if (err){
+          console.log(err);
+          return res.status(500).json({
+            messgae: 'Не удалось вернуть статью'
+          });
+        }
+  
+        if (!doc) {
+          return res.status(404).json({
+            message: 'Статья не найдена',
+          });
+        }
+  
+        res.json(doc);
+      },
+  
+    ).populate('user');
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось получить статью',
+      message: 'Не удалось получить статьи',
     });
   }
 };
