@@ -8,16 +8,15 @@ export const getLastTags = async (req, res) => {
 
     if (!posts || !Array.isArray(posts)) {
       return res.status(500).json({ message: "Ошибка при получении статей." });
-   }
+    }
 
     const tags = posts.map((post) => post.tags).flat().slice(0, 5);
-
     res.json(tags);
   } catch (err) {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось получить теги',
-      error: err.message, // Дополнительная информация об ошибке
+      error: err.message,
     });
   }
 };
@@ -38,7 +37,7 @@ export const getAllTags = async (req, res) => {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось получить теги',
-      error: err.message, // Дополнительная информация об ошибке
+      error: err.message,
     });
   }
 };
@@ -47,13 +46,12 @@ export const getAllTags = async (req, res) => {
 export const getAll = async (req, res) => {
   try {
     const posts = await PostModel.find().populate({ path: "user", select: ["name", "avatar"] });
-
     res.json(posts);
   } catch (err) {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось получить статьи',
-      error: err.message, // Дополнительная информация об ошибке
+      error: err.message,
     });
   }
 };
@@ -62,35 +60,27 @@ export const getAll = async (req, res) => {
 export const getOne = async (req, res) => {
   try {
     const postId = req.params.id;
-    console.log(postId)
+
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: 'Некорректный ID статьи' });
+    }
 
     const post = await PostModel.findByIdAndUpdate(
-      {_id: postId},
+      postId,
       { $inc: { viewsCount: 1 } },
-      { returnDocument: 'after' },
-
-      (err, doc) => {
-        if (err){
-          console.log(err);
-          return res.status(500).json({
-            messgae: 'Не удалось вернуть статью'
-          });
-        }
-  
-        if (!doc) {
-          return res.status(404).json({
-            message: 'Статья не найдена',
-          });
-        }
-  
-        res.json(doc);
-      },
-  
+      { new: true }
     ).populate('user');
+
+    if (!post) {
+      return res.status(404).json({ message: 'Статья не найдена' });
+    }
+
+    res.json(post);
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось получить статьи',
+      message: 'Не удалось получить статью',
+      error: err.message,
     });
   }
 };
@@ -100,7 +90,6 @@ export const remove = async (req, res) => {
   try {
     const postId = req.params.id;
 
-    // Проверка корректности ObjectId
     if (!mongoose.Types.ObjectId.isValid(postId)) {
       return res.status(400).json({ message: 'Некорректный ID статьи' });
     }
@@ -120,7 +109,7 @@ export const remove = async (req, res) => {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось удалить статью',
-      error: err.message, // Дополнительная информация об ошибке
+      error: err.message,
     });
   }
 };
@@ -132,18 +121,17 @@ export const create = async (req, res) => {
       title: req.body.title,
       text: req.body.text,
       imageUrl: req.body.imageUrl,
-      tags: req.body.tags,
+      tags: req.body.tags.split(','),
       user: req.userId,
     });
 
     const post = await doc.save();
-
     res.json(post);
   } catch (err) {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось создать статью',
-      error: err.message, // Дополнительная информация об ошибке
+      error: err.message,
     });
   }
 };
@@ -153,7 +141,6 @@ export const update = async (req, res) => {
   try {
     const postId = req.params.id;
 
-    // Проверка корректности ObjectId
     if (!mongoose.Types.ObjectId.isValid(postId)) {
       return res.status(400).json({ message: 'Некорректный ID статьи' });
     }
@@ -167,7 +154,7 @@ export const update = async (req, res) => {
         user: req.userId,
         tags: req.body.tags,
       },
-      { new: true } // Возвращает обновленный документ
+      { new: true }
     );
 
     if (!updatedPost) {
@@ -176,12 +163,12 @@ export const update = async (req, res) => {
       });
     }
 
-    res.json(updatedPost); // Возвращаем обновленный документ
+    res.json(updatedPost);
   } catch (err) {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось обновить статью',
-      error: err.message, // Дополнительная информация об ошибке
+      error: err.message,
     });
   }
 };

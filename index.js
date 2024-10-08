@@ -40,12 +40,19 @@ app.post('/auth/login', loginValidation, handleValidationErrors, UserController.
 app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
 app.get('/auth/me', checkAuth, UserController.getme);
 
-// Роут для загрузки изображений
 app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
+  if (!req.file) {
+    console.error('Файл не был загружен');
+    return res.status(400).json({ message: 'Файл не был загружен' });
+  }
+
+  console.log('Файл загружен:', req.file);
+  
   res.json({
     url: `/uploads/${req.file.originalname}`,
   });
 });
+
 
 // Роуты для работы со статьями
 app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create); // Создание статьи
