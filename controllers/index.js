@@ -1,2 +1,3 @@
-export * as UserController from './UserController.js';  // Исправлен путь к UserController
-export * as PostController from './PostController.js';  // Привел к единому стилю
+export * as UserController from './UserController.js';  
+export * as PostController from './PostController.js';  
+export * as CommentController from './CommentController.js';

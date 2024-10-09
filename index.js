@@ -2,9 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import multer from 'multer';
 import cors from 'cors';
-
+import { UserController, PostController, CommentController } from './controllers/index.js';
 import { registerValidation, loginValidation, postCreateValidation } from './validations.js';
-import { UserController, PostController } from './controllers/index.js'; // Импортируем контроллеры
 import checkAuth from './utils/checkAuth.js';
 import handleValidationErrors from './utils/handleValidationErrors.js';
 
@@ -53,7 +52,6 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
   });
 });
 
-
 // Роуты для работы со статьями
 app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create); // Создание статьи
 app.get('/posts', PostController.getAll); // Получение всех статей
@@ -62,6 +60,10 @@ app.get('/tags', PostController.getAllTags); // Новый маршрут для
 app.get('/posts/:id', PostController.getOne); // Получение статьи по ID
 app.delete('/posts/:id', checkAuth, PostController.remove); // Удаление статьи по ID
 app.patch('/posts/:id', postCreateValidation, checkAuth, handleValidationErrors, PostController.update); // Обновление статьи по ID
+
+// Роуты для комментариев
+app.post('/comments', checkAuth, CommentController.create); // Для создания комментария
+app.get('/comments/:id', CommentController.getCommentsByPost); // Для получения комментариев по ID поста
 
 // Запуск сервера
 app.listen(4444, (err) => {
